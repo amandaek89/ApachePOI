@@ -12,16 +12,16 @@ public class ExcelService {
         try (XSSFWorkbook wb = new XSSFWorkbook()) {
             Sheet sheet = wb.createSheet("TextColor Sheet");
 
-            // Skapa exempeldata med olika textfärger
-            ExcelHelper.createRowWithTextColor(wb, sheet, 0, "Gray Text", IndexedColors.GREY_50_PERCENT);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 1, "Red Text", IndexedColors.RED);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 2, "Blue Text", IndexedColors.BLUE);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 3, "Green Text", IndexedColors.GREEN);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 4, "Yellow Text", IndexedColors.YELLOW);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 5, "Orange Text", IndexedColors.ORANGE);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 6, "Black Text", IndexedColors.BLACK);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 7, "Pink Text", IndexedColors.PINK);
-            ExcelHelper.createRowWithTextColor(wb, sheet, 8, "Gray Text Again", IndexedColors.GREY_40_PERCENT);
+            // Skapa rader med olika typer av data
+            ExcelHelper.createRowWithTextColor(wb, sheet, 0, "Amanda", "Gray", 1, IndexedColors.GREY_80_PERCENT);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 1, "Björn", "Light Gray", 2, IndexedColors.GREY_50_PERCENT);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 2, "Cecilia", "Very Light Gray", 3, IndexedColors.GREY_40_PERCENT);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 3, "David", "Red", 4, IndexedColors.RED);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 4, "Emma", "Blue", 5, IndexedColors.BLUE);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 5, "Filip", "Green", 6, IndexedColors.GREEN);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 6, "Gabriella", "Yellow", 7, IndexedColors.YELLOW);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 7, "Hugo", "Orange", 8, IndexedColors.ORANGE);
+            ExcelHelper.createRowWithTextColor(wb, sheet, 8, "Isabella", "Black", 9, IndexedColors.BLACK);
 
             try (FileOutputStream fileOut = new FileOutputStream(FILE_NAME)) {
                 wb.write(fileOut);
@@ -41,10 +41,10 @@ public class ExcelService {
              XSSFWorkbook wb = new XSSFWorkbook(fis)) {
             Sheet sheet = wb.getSheetAt(0);
 
-            System.out.println("\n **Textfärger i Excel-filen** ");
+            System.out.println("\n **Innehåll i Excel-filen** ");
 
             for (Row row : sheet) {
-                Cell cell = row.getCell(0);
+                Cell cell = row.getCell(0); // Läs första cellen i raden för att identifiera färgen
                 if (cell != null) {
                     XSSFCellStyle cellStyle = (XSSFCellStyle) cell.getCellStyle();
                     XSSFFont font = cellStyle.getFont();
@@ -53,13 +53,18 @@ public class ExcelService {
                     // Hämta färgnamn
                     String colorName = ExcelHelper.getColorName(colorIndex);
 
-                    // Filtrera bort grå text om alternativet är valt
+                    // Filtrera bort grå rader om alternativet är valt
                     if (filterGray && ExcelHelper.isGrayColor(colorIndex)) {
-                        System.out.println("Skipping gray text: " + cell.getStringCellValue());
+                        System.out.println("Skipping gray row: " + row.getRowNum());
                         continue;
                     }
 
-                    System.out.println("Cell [" + row.getRowNum() + "]: " + cell.getStringCellValue() + " -> Färg: " + colorName);
+                    // Läs in och skriv ut värden från alla tre kolumner
+                    String name = ExcelHelper.getCellValue(row.getCell(0));
+                    String color = ExcelHelper.getCellValue(row.getCell(1));
+                    String number = ExcelHelper.getCellValue(row.getCell(2));
+
+                    System.out.println("Rad [" + row.getRowNum() + "]: " + name + " | " + color + " | " + number + " -> Färg: " + colorName);
                 }
             }
         }
