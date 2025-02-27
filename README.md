@@ -21,7 +21,7 @@ org.example
 ## 🛠 Installation & Körning
 
 ### Krav
-- Java 11+  
+- Java 17+  
 - Apache POI (för Excel-hantering)  
 
 ### Bygga & Köra
