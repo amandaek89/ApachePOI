@@ -1,13 +1,14 @@
 package org.example.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TermImport {
 
     @Id
@@ -20,5 +21,6 @@ public class TermImport {
     private String text;
     private String vehicleType;
 
-    //Lägg till enum STATUS: NEW, UPDATED, DELETED
+    @Enumerated(EnumType.STRING)
+    private TermStatus status;
 }

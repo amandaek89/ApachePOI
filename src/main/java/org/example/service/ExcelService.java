@@ -3,9 +3,11 @@ package org.example.service;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.example.util.ExcelHelper;
+import org.springframework.stereotype.Service;
 
 import java.io.*;
 
+@Service
 public class ExcelService {
     private static final String FILE_NAME = "textcolor.xlsx";
 
