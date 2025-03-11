@@ -1,5 +1,4 @@
 package org.example.service;
-
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 import org.example.util.ExcelHelper;
@@ -7,10 +6,20 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 
+/**
+ * Service för att hantera Excel-filer relaterade till textfärger.
+ * Den här klassen erbjuder funktioner för att skapa, läsa och manipulera Excel-filer.
+ */
 @Service
 public class ExcelService {
     private static final String FILE_NAME = "textcolor.xlsx";
 
+    /**
+     * Skapar en Excel-fil med exempeldata och sparar den till disk.
+     * Filen innehåller namn, färg och nummer i tre kolumner, med olika färger applicerade på texten.
+     *
+     * @throws IOException om filen inte kan skrivas till disk.
+     */
     public void createExcelFile() throws IOException {
         try (XSSFWorkbook wb = new XSSFWorkbook()) {
             Sheet sheet = wb.createSheet("TextColor Sheet");
@@ -33,6 +42,13 @@ public class ExcelService {
         }
     }
 
+    /**
+     * Läser textfärger från en Excel-fil och skriver ut innehållet i konsolen.
+     * Filen laddas och rader filtreras för att hoppa över grå rader om det önskas.
+     *
+     * @param filterGray om true, hoppar metoden över rader med grå färg.
+     * @throws IOException om filen inte kan läsas.
+     */
     public void readTextColorsFromFile(boolean filterGray) throws IOException {
         String filePath = "C:\\Users\\00324322\\IdeaProjects\\poi-excel\\textcolor.xlsx";
         //String filePath = "C:\\Users\\00324322\\OneDrive - Nexer AB\\Dokument\\besiktningsorgan.-termkatalog-fordonsbesiktning_tsid-27-318 (12)-Dekra.xlsx";

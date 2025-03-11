@@ -10,6 +10,12 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Konsolmeny som hanterar användarinteraktion för att utföra olika operationer
+ * relaterade till Excel-filer, termer och deras status.
+ * Klienten får välja mellan olika alternativ som att skapa Excel-filer,
+ * läsa data, importera termer till databasen, och uppdatera termer baserat på status.
+ */
 @Component
 public class ConsoleMenu implements CommandLineRunner {
 
@@ -19,6 +25,15 @@ public class ConsoleMenu implements CommandLineRunner {
     private final TermImportService termImportService;
     private final TermComparisonService termComparisonService;
 
+    /**
+     * Konstruktor som initialiserar alla beroenden som behövs för menyn.
+     *
+     * @param excelService       tjänst för att hantera Excel-relaterade operationer.
+     * @param termService        tjänst för att hantera termer.
+     * @param updateService      tjänst för att uppdatera termer.
+     * @param termImportService tjänst för att importera termer.
+     * @param termComparisonService tjänst för att jämföra termer och sätta deras status.
+     */
     @Autowired
     public ConsoleMenu(ExcelService excelService, TermService termService, TermUpdateService updateService,
                        TermImportService termImportService, TermComparisonService termComparisonService) {
@@ -29,11 +44,19 @@ public class ConsoleMenu implements CommandLineRunner {
         this.termComparisonService = termComparisonService;
     }
 
+    /**
+     * Metod som körs när programmet startar. Denna metod presenterar ett menyalternativ
+     * för användaren och låter användaren välja en åtgärd via konsolen.
+     *
+     * @param args eventuella argument som skickas vid start (inte använda här).
+     * @throws IOException om något går fel vid inläsning av Excel-filer.
+     */
     @Override
     public void run(String... args) throws IOException {
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
+            // Skriver ut menyalternativ
             System.out.println("\n **Excel Hanterare** ");
             System.out.println("1. Skapa en ny Excel-fil");
             System.out.println("2. Läs textfärger från Excel");
@@ -49,9 +72,8 @@ public class ConsoleMenu implements CommandLineRunner {
             System.out.println("12. Visa termer med status UNCHANGED");
             System.out.println("13. Visa alla termer med deras status");
             System.out.println("14. Uppdatera status på en term");
-            System.out.println("15. Sök efter en term i både Term och TermImport-tabellerna");
-            System.out.println("16. Avsluta");
-            System.out.print("Välj ett alternativ (1-16): ");
+            System.out.println("15. Avsluta");
+            System.out.print("Välj ett alternativ (1-15): ");
 
             int choice = scanner.nextInt();
             scanner.nextLine(); // Rensa radbrytning
@@ -119,20 +141,6 @@ public class ConsoleMenu implements CommandLineRunner {
                     updateService.saveOrUpdateTerm(typeToUpdate, codeToUpdate);
                     break;
                 case 15:
-                    System.out.println("Ange type och code för att söka efter termen:");
-                    System.out.print("Type: ");
-                    String searchType = scanner.nextLine().trim();
-                    System.out.print("Code: ");
-                    String searchCode = scanner.nextLine().trim();
-
-                    // Hämta termen från båda tabellerna (Optional används för att hantera null-säkerhet)
-                    updateService.getTermFromBothTables(searchType, searchCode)
-                            .ifPresentOrElse(
-                                    term -> System.out.println("Hittade termen: " + term),
-                                    () -> System.out.println("Ingen term hittades med type: " + searchType + " och code: " + searchCode)
-                            );
-                    break;
-                case 16:
                     System.out.println("Avslutar...");
                     return;
                 default:

@@ -14,9 +14,21 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Hjälpklass för att läsa termer från en Excel-fil och omvandla dem till Term eller TermImport-objekt.
+ * Klassen läser in data från en specifik Excel-fil och returnerar en lista med objekt av den begärda typen.
+ */
 @Component
 public class ExcelReader {
 
+    /**
+     * Läser termer från en Excel-fil och returnerar en lista med antingen Term eller TermImport-objekt.
+     *
+     * @param <T> Den typ av objekt som ska skapas, antingen Term eller TermImport.
+     * @param termClass Den klass som ska skapas för varje rad i Excel-filen (Term eller TermImport).
+     * @return En lista med objekt av den begärda typen, baserat på innehållet i Excel-filen.
+     * @throws IOException Om det uppstår ett problem vid läsning av Excel-filen.
+     */
     public <T> List<T> readTermsFromFile(Class<T> termClass) throws IOException {
         String filePath = "C:\\Users\\00324322\\OneDrive - Nexer AB\\Dokument\\besiktningsorgan.-termkatalog-fordonsbesiktning_tsid-27-318 (12)-Dekra.xlsx";
         File file = new File(filePath);

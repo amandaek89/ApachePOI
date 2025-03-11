@@ -1,5 +1,4 @@
 package org.example.service;
-
 import org.example.mapper.TermMapper;
 import org.example.model.Term;
 import org.example.model.TermImport;
@@ -12,20 +11,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Service för att jämföra och uppdatera termer mellan Term och TermImport-tabellerna.
+ * Den här klassen hanterar jämförelse av termer och uppdatering av status (NEW, UPDATED, UNCHANGED, DELETED).
+ */
 @Service
 public class TermComparisonService {
 
     private final TermRepository termRepository;
-
     private final TermImportRepository termImportRepository;
-
     private final TermService termService;
-
     private final TermImportService termImportService;
-
     private final TermMapper termMapper;
 
-
+    /**
+     * Konstruktor för att initiera TermComparisonService med alla beroenden.
+     *
+     * @param termRepository       Repository för att hantera Term-data.
+     * @param termImportRepository Repository för att hantera TermImport-data.
+     * @param termService          Service för att hantera logik relaterad till Term.
+     * @param termImportService    Service för att hantera logik relaterad till TermImport.
+     * @param termMapper           Mapper för att konvertera mellan Term och TermImport.
+     */
     public TermComparisonService(TermRepository termRepository, TermImportRepository termImportRepository, TermService termService, TermImportService termImportService, TermMapper termMapper) {
         this.termRepository = termRepository;
         this.termImportRepository = termImportRepository;
@@ -34,7 +41,10 @@ public class TermComparisonService {
         this.termMapper = termMapper;
     }
 
-    // Metod för att jämföra och sätta status på termer
+    /**
+     * Jämför termer från Term-tabellen med TermImport-tabellen och uppdaterar status.
+     * Sätter status på termer baserat på om de är nya, uppdaterade, oförändrade eller borttagna.
+     */
     public void compareAndSetStatus() {
         List<Term> existingTerms = termRepository.findAll();  // Hämta termer från Term-tabellen
         List<TermImport> importedTerms = termImportRepository.findAll(); // Hämta termer från TermImport-tabellen
@@ -78,35 +88,53 @@ public class TermComparisonService {
         System.out.println("Jämförelse och statusuppdatering färdig!");
     }
 
-
-    // Metod för att hämta alla termer med status NEW
+    /**
+     * Hämtar alla termer med status NEW.
+     *
+     * @return en lista med termer med status NEW.
+     */
     public List<Term> getNewTerms() {
         return termRepository.findAll().stream()
                 .filter(term -> term.getStatus() == TermStatus.NEW)
                 .collect(Collectors.toList());
     }
 
-    // Metod för att hämta alla termer med status UPDATED
+    /**
+     * Hämtar alla termer med status UPDATED.
+     *
+     * @return en lista med termer med status UPDATED.
+     */
     public List<Term> getUpdatedTerms() {
         return termRepository.findAll().stream()
                 .filter(term -> term.getStatus() == TermStatus.UPDATED)
                 .collect(Collectors.toList());
     }
 
-    // Metod för att hämta alla termer med status DELETED
+    /**
+     * Hämtar alla termer med status DELETED.
+     *
+     * @return en lista med termer med status DELETED.
+     */
     public List<Term> getDeletedTerms() {
         return termRepository.findAll().stream()
                 .filter(term -> term.getStatus() == TermStatus.DELETED)
                 .collect(Collectors.toList());
     }
 
-    // Metod för att hämta alla termer med status UNCHANGED
+    /**
+     * Hämtar alla termer med status UNCHANGED.
+     *
+     * @return en lista med termer med status UNCHANGED.
+     */
     public List<Term> getUnchangedTerms() {
         return termRepository.findAll().stream()
                 .filter(term -> term.getStatus() == TermStatus.UNCHANGED)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Skriver ut alla termer med status NEW.
+     */
     public void printNewTerms() {
         List<Term> newTerms = getNewTerms();  // Hämta alla termer med status NEW
         if (newTerms.isEmpty()) {
@@ -117,6 +145,9 @@ public class TermComparisonService {
         }
     }
 
+    /**
+     * Skriver ut alla termer med status UPDATED.
+     */
     public void printUpdatedTerms() {
         List<Term> updatedTerms = getUpdatedTerms();  // Hämta alla termer med status UPDATED
         if (updatedTerms.isEmpty()) {
@@ -127,6 +158,9 @@ public class TermComparisonService {
         }
     }
 
+    /**
+     * Skriver ut alla termer med status DELETED.
+     */
     public void printDeletedTerms() {
         List<Term> deletedTerms = getDeletedTerms();  // Hämta alla termer med status DELETED
         if (deletedTerms.isEmpty()) {
@@ -137,6 +171,9 @@ public class TermComparisonService {
         }
     }
 
+    /**
+     * Skriver ut alla termer med status UNCHANGED.
+     */
     public void printUnchangedTerms() {
         List<Term> unchangedTerms = getUnchangedTerms();  // Hämta alla termer med status UNCHANGED
         if (unchangedTerms.isEmpty()) {
@@ -147,7 +184,9 @@ public class TermComparisonService {
         }
     }
 
-    // Metod för att visa alla termer med deras respektive status
+    /**
+     * Visar alla termer med deras respektive status.
+     */
     public void showAllTermsWithStatus() {
         List<Term> newTerms = getNewTerms();  // Hämta termer med status NEW
         List<Term> updatedTerms = getUpdatedTerms();  // Hämta termer med status UPDATED
@@ -167,46 +206,4 @@ public class TermComparisonService {
         System.out.println("\nTermer med status UNCHANGED:");
         unchangedTerms.forEach(term -> System.out.println(term));
     }
-
-    // Metod för att uppdatera en befintlig term i Term-tabellen om den är UPDATED
-    private void updateExistingTerm(Term termToUpdate, TermImport termImport) {
-        // Uppdatera termen med värden från TermImport
-        termToUpdate.setText(termImport.getText());
-        termToUpdate.setEgNumber(termImport.getEgNumber());
-        termToUpdate.setVehicleType(termImport.getVehicleType());
-
-        // Sätt statusen till UPDATED om det behövs
-        termToUpdate.setStatus(TermStatus.UPDATED);
-
-        // Spara den uppdaterade termen i Term-tabellen
-        termRepository.save(termToUpdate);
-        System.out.println("Termen med type: " + termToUpdate.getType() + " och code: " + termToUpdate.getCode() + " har uppdaterats i Term-tabellen.");
-    }
-
-    private void createNewTerm(TermImport termImport) {
-        // Skapa en ny Term från TermImport
-        Term newTerm = new Term();
-        newTerm.setCode(termImport.getCode());
-        newTerm.setType(termImport.getType());
-        newTerm.setText(termImport.getText());
-        newTerm.setEgNumber(termImport.getEgNumber());
-        newTerm.setVehicleType(termImport.getVehicleType());
-        newTerm.setStatus(TermStatus.NEW);  // sätt statusen till NEW, kan vara användbart för senare referens
-
-        // Spara den nya termen i Term-tabellen
-        termRepository.save(newTerm);
-        System.out.println("Ny term med type: " + termImport.getType() + " och code: " + termImport.getCode() + " har skapats i Term-tabellen.");
-    }
-
-    private void deleteTerm(Term termToDelete) {
-        // Kontrollera om termen finns i Term-tabellen
-        if (termToDelete != null) {
-            termRepository.delete(termToDelete);  // Ta bort termen från Term-tabellen
-            System.out.println("Termen med type: " + termToDelete.getType() + " och code: " + termToDelete.getCode() + " har raderats från Term-tabellen.");
-        } else {
-            System.out.println("Ingen term hittades att radera.");
-        }
-    }
-
-
 }

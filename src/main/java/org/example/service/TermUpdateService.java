@@ -3,47 +3,50 @@ package org.example.service;
 import org.example.model.Term;
 import org.example.model.TermImport;
 import org.example.model.TermStatus;
+import org.example.repository.TermImportRepository;
 import org.example.repository.TermRepository;
-import org.example.service.TermImportService;
-import org.example.service.TermService;
 import org.example.mapper.TermMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Serviceklass för att uppdatera, lägga till eller ta bort termer i Term-tabellen.
+ * Denna klass hanterar logiken för att behandla termer baserat på deras status,
+ * såsom NY, UPPDATERAD, RADERAD eller OFÖRÄNDRAD.
+ */
 @Service
 public class TermUpdateService {
 
     private final TermRepository termRepository;
-    private final TermService termService;
-    private final TermImportService termImportService;
+    private final TermImportRepository termImportRepository;
     private final TermMapper termMapper;
 
+    /**
+     * Konstruktor för att initialisera TermUpdateService med sina beroenden.
+     *
+     * @param termRepository      repositoryt som används för att hantera Term-objekt.
+     * @param termImportRepository repositoryt som används för att hantera TermImport-objekt.
+     * @param termMapper          en mapper som omvandlar mellan TermImport och Term.
+     */
     @Autowired
-    public TermUpdateService(TermRepository termRepository, TermService termService,
-                             TermImportService termImportService, TermMapper termMapper) {
+    public TermUpdateService(TermRepository termRepository, TermImportRepository termImportRepository, TermMapper termMapper) {
         this.termRepository = termRepository;
-        this.termService = termService;
-        this.termImportService = termImportService;
+        this.termImportRepository = termImportRepository;
         this.termMapper = termMapper;
     }
 
     /**
-     * Hämtar en term från Term-tabellen eller konverterar en från TermImport om den inte finns i Term.
-     */
-    public Optional<Term> getTermFromBothTables(String type, String code) {
-        return Optional.ofNullable(termService.getTermByTypeAndCode(type, code))
-                .or(() -> Optional.ofNullable(termImportService.getTermImportByTypeAndCode(type, code))
-                        .map(termMapper::convertToTerm));
-    }
-
-    /**
      * Sparar, uppdaterar eller tar bort en term baserat på dess status.
+     * Metoden utför olika åtgärder beroende på statusen på termen (NY, UPPDATERAD, RADERAD, OFÖRÄNDRAD).
+     *
+     * @param type termen typ.
+     * @param code termen kod.
      */
     public void saveOrUpdateTerm(String type, String code) {
         Optional<Term> existingTerm = termRepository.findByTypeAndCode(type, code);
-        Optional<TermImport> termImport = Optional.ofNullable(termImportService.getTermImportByTypeAndCode(type, code));
+        Optional<TermImport> termImport = (termImportRepository.findByTypeAndCode(type, code));
 
         TermStatus status = termImport.map(TermImport::getStatus)
                 .orElse(existingTerm.isPresent() ? TermStatus.DELETED : null);
@@ -64,6 +67,8 @@ public class TermUpdateService {
 
     /**
      * Lägger till en ny term i Term-tabellen.
+     *
+     * @param termImport termen som ska läggas till.
      */
     private void addNewTerm(TermImport termImport) {
         Term newTerm = termMapper.convertToTerm(termImport);
@@ -73,6 +78,9 @@ public class TermUpdateService {
 
     /**
      * Uppdaterar en befintlig term i Term-tabellen med värden från TermImport.
+     *
+     * @param term       den befintliga termen som ska uppdateras.
+     * @param termImport de nya värdena från TermImport.
      */
     private void updateExistingTerm(Term term, TermImport termImport) {
         term.setText(termImport.getText());
@@ -84,6 +92,8 @@ public class TermUpdateService {
 
     /**
      * Tar bort en befintlig term från Term-tabellen.
+     *
+     * @param term termen som ska raderas.
      */
     private void deleteExistingTerm(Term term) {
         termRepository.delete(term);

@@ -3,9 +3,24 @@ package org.example.util;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.*;
 
+/**
+ * Hjälpklass som innehåller metoder för att arbeta med Excel-filer (XSSF-format) med Apache POI.
+ * Klassen tillhandahåller funktioner för att skapa celler med specifika textfärger, läsa cellvärden,
+ * och kontrollera färgindex i Excel-dokument.
+ */
 public class ExcelHelper {
 
-    // Skapar en rad där alla celler har samma textfärg men olika typer av data
+    /**
+     * Skapar en rad i ett Excel-ark där alla celler har samma textfärg men olika typer av data.
+     *
+     * @param wb Arbetshäftet (Workbook) där rad och celler kommer att skapas.
+     * @param sheet Bladet (Sheet) i arbetsboken där raden ska läggas till.
+     * @param rowIndex Indexet för raden som ska skapas.
+     * @param name Namnet (sträng) som ska sättas i den första cellen.
+     * @param color En text som representerar färgen som ska sättas i den andra cellen.
+     * @param number Ett numeriskt värde som ska sättas i den tredje cellen.
+     * @param textColor Den textfärg som ska tillämpas på alla celler i raden.
+     */
     public static void createRowWithTextColor(XSSFWorkbook wb, Sheet sheet, int rowIndex, String name, String color, int number, IndexedColors textColor) {
         Row row = sheet.createRow(rowIndex);
 
@@ -15,7 +30,7 @@ public class ExcelHelper {
         CellStyle style = wb.createCellStyle();
         style.setFont(font);
 
-        // Skapa tre kolumner med olika datatyper men samma textfärg
+        // Skapa tre celler med olika datatyper men samma textfärg
         Cell cell1 = row.createCell(0);
         cell1.setCellValue(name);
         cell1.setCellStyle(style);
@@ -29,7 +44,12 @@ public class ExcelHelper {
         cell3.setCellStyle(style);
     }
 
-    // Returnerar färgnamnet baserat på dess index
+    /**
+     * Returnerar färgnamnet för ett givet färgindex.
+     *
+     * @param colorIndex Färgindexet (kort) för den färg som ska identifieras.
+     * @return Namnet på färgen som motsvarar indexet, eller "Unknown Color" om färgen inte finns.
+     */
     public static String getColorName(short colorIndex) {
         for (IndexedColors indexedColor : IndexedColors.values()) {
             if (indexedColor.getIndex() == colorIndex) {
@@ -39,7 +59,12 @@ public class ExcelHelper {
         return "Unknown Color (" + colorIndex + ")";
     }
 
-    // Kontrollerar om färgen är en nyans av grått
+    /**
+     * Kontrollerar om en given färg är en nyans av grått.
+     *
+     * @param colorIndex Färgindexet (kort) för den färg som ska kontrolleras.
+     * @return true om färgen är en nyans av grått, annars false.
+     */
     public static boolean isGrayColor(short colorIndex) {
         return colorIndex == IndexedColors.GREY_80_PERCENT.getIndex() ||
                 colorIndex == IndexedColors.GREY_50_PERCENT.getIndex() ||
@@ -47,7 +72,12 @@ public class ExcelHelper {
                 colorIndex == IndexedColors.GREY_25_PERCENT.getIndex();
     }
 
-    // Läser cellvärdet och hanterar olika datatyper (text, nummer, blandad text/nummer)
+    /**
+     * Läser värdet från en cell och hanterar olika datatyper som strängar, nummer och booleans.
+     *
+     * @param cell Cellen från vilken värdet ska hämtas.
+     * @return Cellens värde som en sträng, eller en beskrivning av okänd typ om cellens typ inte stöds.
+     */
     public static String getCellValue(Cell cell) {
         if (cell == null) {
             return "";
